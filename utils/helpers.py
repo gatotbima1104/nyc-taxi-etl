@@ -1,8 +1,10 @@
 from pathlib import Path
+from typing import Callable
 import pandas as pd
 import fastparquet
 from pandas import DataFrame
 from datetime import datetime
+import time
 
 class Helper:
     LOADERS = {
@@ -47,7 +49,15 @@ class Helper:
         
     @staticmethod
     def log(message: str):
-        timestamp = datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
-        print(f"[INFO] {timestamp} - {message}", flush=True)
+        print(f"[INFO] {message}", flush=True)
+
+    @staticmethod
+    def measure(step_name: str, func: Callable):
+        Helper.log(f"{step_name} ...")
+
+        start = time.perf_counter()
+        result = func()
+        duration = time.perf_counter() - start
+
+        Helper.log(f"{step_name} completed in {duration:.2f}s")
+        return result
