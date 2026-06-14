@@ -27,6 +27,7 @@ Extract → Transform → Validate → Load → Report
 │   └── load.py
 ├── utils/
 ├── logs/
+├── reports/
 ├── app.py
 ├── script_entrypoint.sh
 ├── Dockerfile
@@ -113,15 +114,49 @@ data/mart/valid/
 
 data/mart/invalid/
 └── invalid_yellow_tripdata_2026_01.csv
+
+reports/
+└── report.json
 ```
 
-Example report:
+### Example Terminal Report
 
 ```text
-Valid Rows     : 3,555,245
-Invalid Rows   : 169,644
-Total Rows     : 3,724,889
-Execution Time : 64.25s
+==================================================
+DATA QUALITY REPORT
+
+Dataset Summary
+---------------
+Total Records      : 3,724,889
+Valid Records      : 3,555,245 (95.45%)
+Invalid Records    :   169,644 (4.55%)
+
+Invalid Record Breakdown
+------------------------
+Duration Invalid   : 45,070
+Distance Invalid   : 125,738
+
+Pipeline
+--------
+Execution Time     : 63.49s
+
+==================================================
+```
+
+### Example JSON Report
+
+```json
+{
+    "timestamp": "2026-06-14T09:20:30.136673",
+    "total_records": 3724889,
+    "valid_records": 3555245,
+    "invalid_records": {
+        "total": 169644,
+        "invalid_duration": 45070,
+        "invalid_distance": 125738
+    },
+    "execution_time_seconds": 63.49
+}
 ```
 
 ## Tech Stack
