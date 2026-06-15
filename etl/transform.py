@@ -150,7 +150,7 @@ class TaxiTransformer(Transform):
         )
         return dataframe
     
-    def export_to_csv(self, dataframe, output_name: str) -> None:
+    def export_to_csv(self, dataframe: Dataframe, output_name: str) -> None:
         """
             Export dataframe to_csv
         """
@@ -162,7 +162,43 @@ class TaxiTransformer(Transform):
 
         print(f'[EXPORT] Saved to {str(output_dir) + "/" + output_name} ...')
         
-    def transform(self, filepath: str, filepath_lookup_table: str, output_name: str) -> Dataframe:
+    def validate_data(self, dataframe: Dataframe) -> tuple[Dataframe, Dataframe, dict]:        
+        """
+            Validate valid, invalid dataset
+        """
+        print('[VALIDATE] Validating data ...')
+        
+        df = dataframe.copy()
+        
+        # masking boolean
+        duration_invalid = (df['pickup_datetime'] >= df['dropoff_datetime'])
+        distance_invalid = (df['trip_distance'] <= 0)
+        
+        # separate data
+        invalid_data = df[
+            duration_invalid | distance_invalid
+        ].copy() # INVALID
+        
+        invalid_data['error_type'] = None
+        invalid_data.loc[duration_invalid, 'error_type'] = 'duration invalid'
+        invalid_data.loc[distance_invalid, 'error_type'] = 'distance invalid'
+        
+        valid_data = df[
+            ~(duration_invalid | distance_invalid)
+        ].copy() # VALID
+        
+        stats = {
+            "invalid_duration" : int(duration_invalid.sum()),
+            "invalid_distance" : int(distance_invalid.sum())
+        }
+        
+        return (
+            valid_data,
+            invalid_data,
+            stats
+        )
+        
+    def transform(self, filepath: str, filepath_lookup_table: str, output_name: str) -> tuple[Dataframe, Dataframe, dict]:
         """
             Transform data
         """
@@ -172,4 +208,6 @@ class TaxiTransformer(Transform):
         transformed_data = self.enrichment_data(standardized_data)
         dataframe = self.merge_csv(filepath_lookup_table, transformed_data)
         self.export_to_csv(dataframe, output_name)
-        return dataframe
+        
+        valid_data, invalid_data, stats = self.validate_data(dataframe)
+        return (valid_data, invalid_data, stats)

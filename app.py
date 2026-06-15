@@ -42,10 +42,6 @@ def transform(downloaded_files: list[str]) -> DataFrame:
         filepath_lookup_table=downloaded_files[1],
         output_name=TRANFORMED_FILE
     )
- 
-def validate(dataframe: DataFrame) -> tuple[DataFrame, DataFrame]:
-    loader = TaxiLoader()
-    return loader.validate_data(dataframe)
     
 def load(valid_data: DataFrame, invalid_data: DataFrame):
     loader = TaxiLoader()
@@ -70,15 +66,9 @@ def main():
     )
     Helper.log("=" * 50)
     
-    transformed_df = Helper.measure(
-        "Transform",
-        lambda: transform(extracted_files)
-    )
-    Helper.log("=" * 50)
-    
     valid_data, invalid_data, stats = Helper.measure(
-        "Validate",
-        lambda: validate(transformed_df)
+        "Transform and Validate",
+        lambda: transform(extracted_files)
     )
     Helper.log("=" * 50)
     
@@ -86,7 +76,7 @@ def main():
         "Load",
         lambda: load(valid_data, invalid_data)
     )
-    Helper.log("=" * 50)
+    Helper.log("=" * 50, isShowTimestamp=False)
     
     total_duration = time.perf_counter() - pipeline_start
     

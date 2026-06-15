@@ -13,4 +13,4 @@ env/
 *.csv
 
 pipeline.log
-reports/
+report.json

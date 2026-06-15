@@ -48,9 +48,12 @@ class Helper:
         dataframe.to_csv(output_path)
         
     @staticmethod
-    def log(message: str) -> str:
+    def log(message: str, isShowTimestamp: bool = True) -> str:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[INFO] {timestamp} - {message}", flush=True)
+        if isShowTimestamp:
+            print(f"[INFO] {timestamp} - {message}", flush=True)
+        else:
+            print(f"[INFO] {message}", flush=True)
 
     @staticmethod
     def measure(step_name: str, func: Callable):
@@ -76,28 +79,32 @@ class Helper:
             len(invalid_data) / total_rows * 100
             if total_rows else 0
         )
+    
+        time.sleep(1)
+        
+        Helper.log("", isShowTimestamp=False)
+        Helper.log("DATA QUALITY REPORT", isShowTimestamp=False)
+        Helper.log("", isShowTimestamp=False)
 
-        Helper.log("DATA QUALITY REPORT")
-        Helper.log("")
+        Helper.log("Dataset Summary", isShowTimestamp=False)
+        Helper.log("-" * 15, isShowTimestamp=False)
+        Helper.log(f"Total Records      : {total_rows:,}", isShowTimestamp=False)
+        Helper.log(f"Valid Records      : {len(valid_data):,} ({valid_pct:.2f}%)", isShowTimestamp=False)
+        Helper.log(f"Invalid Records    : {len(invalid_data):,} ({invalid_pct:.2f}%)", isShowTimestamp=False)
 
-        Helper.log("Dataset Summary")
-        Helper.log("-" * 15)
-        Helper.log(f"Total Records      : {total_rows:,}")
-        Helper.log(f"Valid Records      : {len(valid_data):,} ({valid_pct:.2f}%)")
-        Helper.log(f"Invalid Records    : {len(invalid_data):,} ({invalid_pct:.2f}%)")
+        Helper.log("", isShowTimestamp=False)
+        Helper.log("Invalid Record Breakdown", isShowTimestamp=False)
+        Helper.log("-" * 24, isShowTimestamp=False)
+        Helper.log(f"Duration Invalid   : {stats['invalid_duration']:,}", isShowTimestamp=False)
+        Helper.log(f"Distance Invalid   : {stats['invalid_distance']:,}", isShowTimestamp=False)
 
-        Helper.log("")
-        Helper.log("Invalid Record Breakdown")
-        Helper.log("-" * 24)
-        Helper.log(f"Duration Invalid   : {stats['invalid_duration']:,}")
-        Helper.log(f"Distance Invalid   : {stats['invalid_distance']:,}")
+        Helper.log("", isShowTimestamp=False)
+        Helper.log("Pipeline", isShowTimestamp=False)
+        Helper.log("-" * 8, isShowTimestamp=False)
+        Helper.log(f"Execution Time     : {execution_time:.2f}s", isShowTimestamp=False)
+        Helper.log("", isShowTimestamp=False)
 
-        Helper.log("")
-        Helper.log("Pipeline")
-        Helper.log("-" * 8)
-        Helper.log(f"Execution Time     : {execution_time:.2f}s")
-
-        Helper.log("=" * 50)
+        Helper.log("=" * 50, isShowTimestamp=False)
         
         return {
             "timestamp": datetime.now().isoformat(),
