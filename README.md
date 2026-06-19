@@ -54,6 +54,22 @@ git clone https://github.com/gatotbima1104/nyc-taxi-etl.git
 cd nyc-taxi-etl
 ```
 
+## Environment Setup
+
+Create a `.env` file from the example template:
+
+```bash
+cp .env.example .env
+```
+
+Open the `.env` file and configure the dataset URL:
+
+```env
+TAXI_DATA_URL=https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2026-01.parquet
+```
+
+> **Note:** You can replace the URL with any available NYC Yellow Taxi dataset file if you want to process data from a different month.
+
 ## Run Locally on MacOS
 
 Make venv environment:
